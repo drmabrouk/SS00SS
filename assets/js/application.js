@@ -4,10 +4,19 @@
     window.VS = {
         config: window.vsConfig || {},
 
-        // Verification Shield SVG Icon
-        shieldSvg: `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
-        clockInSvg: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
-        clockOutSvg: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+        // SVG Icons
+        shieldSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+        clockInSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+        clockOutSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+        menuSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+
+        // Nav Icons
+        dashboardIcon: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>`,
+        usersIcon: `<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+        branchIcon: `<svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`,
+        clockIcon: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+        payrollIcon: `<svg viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>`,
+        leaveIcon: `<svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>`,
 
         init: function() {
             this.bindEvents();
@@ -27,6 +36,18 @@
             $(document).on('click', '#vs-btn-passkey-login', this.handlePasskeyLogin.bind(this));
             $(document).on('click', '#vs-btn-passkey-register', this.handlePasskeyRegister.bind(this));
             $(document).on('click', '.vs-nav-item', this.handleNavClick.bind(this));
+            $(document).on('click', '#vs-mobile-toggle', this.toggleMobileSidebar.bind(this));
+            $(document).on('click', '#vs-sidebar-overlay', this.closeMobileSidebar.bind(this));
+        },
+
+        toggleMobileSidebar: function() {
+            $('.vs-sidebar').toggleClass('open');
+            $('#vs-sidebar-overlay').toggleClass('open');
+        },
+
+        closeMobileSidebar: function() {
+            $('.vs-sidebar').removeClass('open');
+            $('#vs-sidebar-overlay').removeClass('open');
         },
 
         checkSessionAndRender: function() {
@@ -58,7 +79,7 @@
                                 <input type="password" id="vs-password" class="vs-input" placeholder="••••••••" required>
                             </div>
                             <div class="vs-form-group" style="display: flex; justify-content: space-between; align-items: center;">
-                                <label style="font-size:0.85rem;"><input type="checkbox" id="vs-remember" checked> Remember Me</label>
+                                <label style="font-size:0.85rem; display:flex; align-items:center; gap:6px;"><input type="checkbox" id="vs-remember" checked> Remember Me</label>
                                 <button type="button" class="vs-btn-link" id="vs-btn-forgot-password" style="background:none; border:none; color:var(--vs-text-muted); font-size:0.825rem; cursor:pointer;">Forgot Password?</button>
                             </div>
                             <div id="vs-login-error" style="color:#ef4444; font-size:0.85rem; margin-bottom:12px; display:none;"></div>
@@ -226,22 +247,23 @@
 
             if (role === 'vs_employee') {
                 navItems = `
-                    <a class="vs-nav-item active" data-view="employee-home">Dashboard</a>
-                    <a class="vs-nav-item" data-view="employee-history">Attendance History</a>
-                    <a class="vs-nav-item" data-view="employee-payroll">Payroll Statement</a>
-                    <a class="vs-nav-item" data-view="employee-leave">Leave Requests</a>
+                    <a class="vs-nav-item active" data-view="employee-home">${this.dashboardIcon} Dashboard</a>
+                    <a class="vs-nav-item" data-view="employee-history">${this.clockIcon} Attendance History</a>
+                    <a class="vs-nav-item" data-view="employee-payroll">${this.payrollIcon} Payroll Statement</a>
+                    <a class="vs-nav-item" data-view="employee-leave">${this.leaveIcon} Leave Requests</a>
                 `;
             } else {
                 navItems = `
-                    <a class="vs-nav-item active" data-view="manager-home">Dashboard</a>
-                    <a class="vs-nav-item" data-view="manager-employees">Employees</a>
-                    <a class="vs-nav-item" data-view="manager-branches">Branches</a>
-                    <a class="vs-nav-item" data-view="manager-attendance">Attendance Records</a>
-                    <a class="vs-nav-item" data-view="manager-payroll">Payroll Engine</a>
+                    <a class="vs-nav-item active" data-view="manager-home">${this.dashboardIcon} Dashboard</a>
+                    <a class="vs-nav-item" data-view="manager-employees">${this.usersIcon} Employees</a>
+                    <a class="vs-nav-item" data-view="manager-branches">${this.branchIcon} Branches</a>
+                    <a class="vs-nav-item" data-view="manager-attendance">${this.clockIcon} Attendance Records</a>
+                    <a class="vs-nav-item" data-view="manager-payroll">${this.payrollIcon} Payroll Engine</a>
                 `;
             }
 
             var layout = `
+                <div class="vs-sidebar-overlay" id="vs-sidebar-overlay"></div>
                 <div class="vs-sidebar">
                     <div class="vs-sidebar-brand">
                         <div style="width:22px; height:22px;">${this.shieldSvg}</div>
@@ -257,7 +279,10 @@
                 </div>
                 <div class="vs-main-content">
                     <header class="vs-header">
-                        <h1 class="vs-header-title" id="vs-view-title">Overview</h1>
+                        <div class="vs-header-left">
+                            <button id="vs-mobile-toggle" class="vs-mobile-toggle">${this.menuSvg}</button>
+                            <h1 class="vs-header-title" id="vs-view-title">Overview</h1>
+                        </div>
                         <div class="vs-user-menu">
                             <span>Role: <strong>${role.replace('vs_', '').toUpperCase()}</strong></span>
                         </div>
@@ -277,6 +302,8 @@
             var target = $(e.currentTarget);
             $('.vs-nav-item').removeClass('active');
             target.addClass('active');
+
+            this.closeMobileSidebar();
 
             var view = target.data('view');
             this.loadView(view);
@@ -480,7 +507,7 @@
                 var html = `
                     <div class="vs-card" style="margin-bottom:16px;">
                         <h3 style="font-size:1rem; font-weight:700; margin-bottom:10px;">Calculate Payroll Period</h3>
-                        <form id="vs-run-payroll-form" style="display:flex; gap:10px; align-items:flex-end;">
+                        <form id="vs-run-payroll-form" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
                             <div>
                                 <label class="vs-form-label">Period Name</label>
                                 <input type="text" id="vs-pay-name" class="vs-input" value="Payroll - ${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}" required>

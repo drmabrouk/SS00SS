@@ -43,7 +43,7 @@ body.vs-app-body {
     position: relative;
 }
 
-/* 3. Pure White Left Sidebar with Light Gray Border */
+/* Pure White Left Sidebar with Light Gray Border */
 .vs-sidebar {
     position: fixed;
     top: 16px;
@@ -104,6 +104,15 @@ body.vs-app-body {
     cursor: pointer;
 }
 
+.vs-nav-item svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
 .vs-nav-item:hover, .vs-nav-item.active {
     background-color: var(--vs-secondary);
     color: var(--vs-text);
@@ -116,6 +125,19 @@ body.vs-app-body {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+/* Sidebar Backdrop for Mobile */
+.vs-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+}
+
+.vs-sidebar-overlay.open {
+    display: block;
 }
 
 /* Main Content Area */
@@ -136,6 +158,37 @@ body.vs-app-body {
     border-bottom: 1px solid var(--vs-border);
 }
 
+.vs-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vs-mobile-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--vs-border);
+    border-radius: var(--vs-radius);
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.vs-mobile-toggle:hover {
+    background-color: var(--vs-secondary);
+}
+
+.vs-mobile-toggle svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--vs-text);
+    stroke-width: 2;
+}
+
 .vs-header-title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -151,7 +204,7 @@ body.vs-app-body {
     color: var(--vs-text-muted);
 }
 
-/* 2. Compact Layout Cards & Grid */
+/* Compact Layout Cards & Grid */
 .vs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -183,7 +236,7 @@ body.vs-app-body {
     color: var(--vs-text);
 }
 
-/* 5. Standardized Button Design & REQUIRED Hover Interactions */
+/* Standardized Button Design & REQUIRED Hover Interactions */
 .vs-btn {
     display: inline-flex;
     align-items: center;
@@ -278,7 +331,7 @@ body.vs-app-body {
     border-color: var(--vs-border-dark);
 }
 
-/* 6. Compact Centered Login Card */
+/* Compact Centered Login Card */
 .vs-auth-wrapper {
     display: flex;
     align-items: center;
@@ -317,7 +370,7 @@ body.vs-app-body {
     font-size: 0.85rem;
 }
 
-/* 8. Compact Data Tables */
+/* Compact Data Tables */
 .vs-table-wrapper {
     overflow-x: auto;
     border: 1px solid var(--vs-border);
@@ -335,6 +388,10 @@ body.vs-app-body {
 .vs-table th, .vs-table td {
     padding: 10px 14px;
     border-bottom: 1px solid var(--vs-border);
+}
+
+.vs-table tr:hover td {
+    background-color: #FAFAFA;
 }
 
 .vs-table th {
@@ -360,10 +417,11 @@ body.vs-app-body {
 .vs-badge-warning { background-color: #27272A; color: #FFFFFF; }
 .vs-badge-danger { background-color: #09090B; color: #FFFFFF; }
 
-/* 10. GPS Status Indicator Component */
+/* GPS Status Indicator Component */
 .vs-gps-status {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 8px 12px;
     border-radius: var(--vs-radius);
@@ -409,6 +467,9 @@ body.vs-app-body {
 
 /* Mobile Drawer Responsiveness */
 @media (max-width: 768px) {
+    .vs-mobile-toggle {
+        display: inline-flex;
+    }
     .vs-sidebar {
         transform: translateX(-120%);
     }
