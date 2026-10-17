@@ -38,6 +38,9 @@
             $(document).on('click', '.vs-nav-item', this.handleNavClick.bind(this));
             $(document).on('click', '#vs-mobile-toggle', this.toggleMobileSidebar.bind(this));
             $(document).on('click', '#vs-sidebar-overlay', this.closeMobileSidebar.bind(this));
+
+            // Employee Management Actions
+            $(document).on('click', '.vs-btn-toggle-emp-status', this.handleToggleEmpStatus.bind(this));
         },
 
         toggleMobileSidebar: function() {
@@ -377,6 +380,8 @@
             $.get(this.config.ajax_url, { action: 'vs_get_users', nonce: this.config.nonce }, function(res) {
                 if (res.success) {
                     var rows = res.data.users.map(function(u) {
+                        var toggleStatus = u.status === 'active' ? 'suspended' : 'active';
+                        var toggleText = u.status === 'active' ? 'Suspend' : 'Activate';
                         return `
                             <tr>
                                 <td>${u.employee_code}</td>
@@ -384,7 +389,10 @@
                                 <td>${u.phone}</td>
                                 <td>${u.branch_name || 'N/A'}</td>
                                 <td>${u.job_title || 'Employee'}</td>
-                                <td><span class="vs-badge vs-badge-success">${u.status}</span></td>
+                                <td><span class="vs-badge ${u.status === 'active' ? 'vs-badge-success' : 'vs-badge-danger'}">${u.status}</span></td>
+                                <td>
+                                    <button class="vs-btn vs-btn-outline vs-btn-toggle-emp-status" data-id="${u.id}" data-status="${toggleStatus}" style="height:26px; padding:0 8px; font-size:0.75rem;">${toggleText}</button>
+                                </td>
                             </tr>
                         `;
                     }).join('');
@@ -403,8 +411,8 @@
                         </div>
                         <div class="vs-table-wrapper">
                             <table class="vs-table">
-                                <thead><tr><th>Code</th><th>Name</th><th>Phone</th><th>Branch</th><th>Job Title</th><th>Status</th></tr></thead>
-                                <tbody>${rows || '<tr><td colspan="6">No employees found.</td></tr>'}</tbody>
+                                <thead><tr><th>Code</th><th>Name</th><th>Phone</th><th>Branch</th><th>Job Title</th><th>Status</th><th>Actions</th></tr></thead>
+                                <tbody>${rows || '<tr><td colspan="7">No employees found.</td></tr>'}</tbody>
                             </table>
                         </div>
                     `;
@@ -425,6 +433,24 @@
                             if (cRes.success) { self.renderEmployeesList(); }
                         });
                     });
+                }
+            });
+        },
+
+        handleToggleEmpStatus: function(e) {
+            var btn = $(e.currentTarget);
+            var empId = btn.data('id');
+            var status = btn.data('status');
+
+            $.post(this.config.ajax_url, {
+                action: 'vs_toggle_employee_status',
+                nonce: this.config.nonce,
+                employee_id: empId,
+                status: status
+            }, function(res) {
+                alert(res.data.message);
+                if (res.success) {
+                    VS.renderEmployeesList();
                 }
             });
         },
