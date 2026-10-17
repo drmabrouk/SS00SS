@@ -4,6 +4,11 @@
     window.VS = {
         config: window.vsConfig || {},
 
+        // Verification Shield SVG Icon
+        shieldSvg: `<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+        clockInSvg: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+        clockOutSvg: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+
         init: function() {
             this.bindEvents();
             this.checkSessionAndRender();
@@ -17,6 +22,7 @@
             $(document).on('submit', '#vs-reset-password-form', this.handleResetPassword.bind(this));
             $(document).on('click', '#vs-btn-clock-in', this.handleClockIn.bind(this));
             $(document).on('click', '#vs-btn-clock-out', this.handleClockOut.bind(this));
+            $(document).on('click', '#vs-btn-retry-gps', this.handleClockIn.bind(this));
             $(document).on('click', '#vs-btn-logout', this.handleLogout.bind(this));
             $(document).on('click', '#vs-btn-passkey-login', this.handlePasskeyLogin.bind(this));
             $(document).on('click', '#vs-btn-passkey-register', this.handlePasskeyRegister.bind(this));
@@ -36,6 +42,9 @@
                 <div class="vs-auth-wrapper">
                     <div class="vs-auth-card">
                         <div class="vs-auth-header">
+                            <div style="display:flex; justify-content:center; margin-bottom:8px;">
+                                <div style="width:36px; height:36px;">${this.shieldSvg}</div>
+                            </div>
                             <h2 class="vs-auth-title">Verification System</h2>
                             <p class="vs-auth-subtitle">Workforce Management & Attendance</p>
                         </div>
@@ -49,13 +58,13 @@
                                 <input type="password" id="vs-password" class="vs-input" placeholder="••••••••" required>
                             </div>
                             <div class="vs-form-group" style="display: flex; justify-content: space-between; align-items: center;">
-                                <label><input type="checkbox" id="vs-remember" checked> Remember Me</label>
-                                <button type="button" class="vs-btn-link" id="vs-btn-forgot-password" style="background:none; border:none; color:var(--vs-text-muted); cursor:pointer;">Forgot Password?</button>
+                                <label style="font-size:0.85rem;"><input type="checkbox" id="vs-remember" checked> Remember Me</label>
+                                <button type="button" class="vs-btn-link" id="vs-btn-forgot-password" style="background:none; border:none; color:var(--vs-text-muted); font-size:0.825rem; cursor:pointer;">Forgot Password?</button>
                             </div>
-                            <div id="vs-login-error" style="color:#ef4444; margin-bottom:12px; display:none;"></div>
+                            <div id="vs-login-error" style="color:#ef4444; font-size:0.85rem; margin-bottom:12px; display:none;"></div>
                             <button type="submit" class="vs-btn vs-btn-primary" style="width:100%;">Sign In</button>
                         </form>
-                        <div style="margin-top: 16px; text-align: center;">
+                        <div style="margin-top: 12px; text-align: center;">
                             <button type="button" id="vs-btn-passkey-login" class="vs-btn vs-btn-outline" style="width:100%;">Sign in with Passkey / Biometrics</button>
                         </div>
                     </div>
@@ -92,12 +101,12 @@
                 <div class="vs-modal-backdrop" id="vs-forgot-modal">
                     <div class="vs-modal">
                         <h3 class="vs-auth-title">Password Recovery</h3>
-                        <p class="vs-auth-subtitle">Enter your registered phone number to receive a 6-digit code.</p>
+                        <p class="vs-auth-subtitle">Enter registered phone number to receive a 6-digit code.</p>
                         <form id="vs-forgot-form" style="margin-top:16px;">
                             <div class="vs-form-group">
                                 <input type="text" id="vs-recovery-phone" class="vs-input" value="+971" required>
                             </div>
-                            <div id="vs-forgot-msg" style="margin-bottom:12px;"></div>
+                            <div id="vs-forgot-msg" style="margin-bottom:12px; font-size:0.85rem;"></div>
                             <button type="submit" class="vs-btn vs-btn-primary" style="width:100%;">Send Verification Code</button>
                             <button type="button" onclick="$('#vs-forgot-modal').remove()" class="vs-btn vs-btn-outline" style="width:100%; margin-top:8px;">Cancel</button>
                         </form>
@@ -133,9 +142,9 @@
                         <form id="vs-verify-code-form" style="margin-top:16px;">
                             <input type="hidden" id="vs-verify-phone" value="${phone}">
                             <div class="vs-form-group">
-                                <input type="text" id="vs-code-input" class="vs-input" maxlength="6" placeholder="123456" style="letter-spacing:8px; text-align:center; font-size:1.5rem;" required>
+                                <input type="text" id="vs-code-input" class="vs-input" maxlength="6" placeholder="123456" style="letter-spacing:6px; text-align:center; font-size:1.25rem;" required>
                             </div>
-                            <div id="vs-verify-msg" style="margin-bottom:12px;"></div>
+                            <div id="vs-verify-msg" style="margin-bottom:12px; font-size:0.85rem;"></div>
                             <button type="submit" class="vs-btn vs-btn-primary" style="width:100%;">Verify Code</button>
                         </form>
                     </div>
@@ -179,7 +188,7 @@
                                 <label class="vs-form-label">Confirm Password</label>
                                 <input type="password" id="vs-confirm-password" class="vs-input" minlength="8" required>
                             </div>
-                            <div id="vs-reset-msg" style="margin-bottom:12px;"></div>
+                            <div id="vs-reset-msg" style="margin-bottom:12px; font-size:0.85rem;"></div>
                             <button type="submit" class="vs-btn vs-btn-primary" style="width:100%;">Reset Password</button>
                         </form>
                     </div>
@@ -235,21 +244,22 @@
             var layout = `
                 <div class="vs-sidebar">
                     <div class="vs-sidebar-brand">
+                        <div style="width:22px; height:22px;">${this.shieldSvg}</div>
                         <span>Verification System</span>
                     </div>
                     <nav class="vs-sidebar-nav">
                         ${navItems}
                     </nav>
                     <div class="vs-sidebar-footer">
-                        <button id="vs-btn-passkey-register" class="vs-btn vs-btn-outline" style="width:100%; margin-bottom:8px; font-size:0.85rem; color:#fff; border-color:rgba(255,255,255,0.2);">Register Passkey</button>
-                        <button id="vs-btn-logout" class="vs-btn vs-btn-outline" style="width:100%; color:#fff; border-color:rgba(255,255,255,0.2);">Sign Out</button>
+                        <button id="vs-btn-passkey-register" class="vs-btn vs-btn-outline" style="width:100%; margin-bottom:4px; font-size:0.8rem;">Register Passkey</button>
+                        <button id="vs-btn-logout" class="vs-btn vs-btn-outline" style="width:100%; font-size:0.8rem;">Sign Out</button>
                     </div>
                 </div>
                 <div class="vs-main-content">
                     <header class="vs-header">
                         <h1 class="vs-header-title" id="vs-view-title">Overview</h1>
                         <div class="vs-user-menu">
-                            <span style="font-weight:600;">Role: ${role.replace('vs_', '').toUpperCase()}</span>
+                            <span>Role: <strong>${role.replace('vs_', '').toUpperCase()}</strong></span>
                         </div>
                     </header>
                     <div id="vs-dashboard-body">
@@ -298,15 +308,19 @@
             var html = `
                 <div class="vs-grid">
                     <div class="vs-card" style="text-align:center;">
-                        <div class="vs-card-title">GPS Attendance Clock</div>
-                        <div style="margin:20px 0;">
-                            <button id="vs-btn-clock-in" class="vs-btn vs-btn-primary vs-btn-lg" style="margin-right:8px;">Clock In</button>
-                            <button id="vs-btn-clock-out" class="vs-btn vs-btn-outline vs-btn-lg">Clock Out</button>
+                        <div class="vs-card-title">GPS Attendance Verification</div>
+                        <div style="margin:16px 0; display:flex; justify-content:center; gap:8px;">
+                            <button id="vs-btn-clock-in" class="vs-btn vs-btn-primary vs-btn-lg">
+                                ${this.clockInSvg} Clock In
+                            </button>
+                            <button id="vs-btn-clock-out" class="vs-btn vs-btn-outline vs-btn-lg">
+                                ${this.clockOutSvg} Clock Out
+                            </button>
                         </div>
-                        <div id="vs-clock-msg" style="font-size:0.9rem;"></div>
+                        <div id="vs-gps-status-box" class="vs-gps-status" style="display:none;"></div>
                     </div>
                     <div class="vs-card">
-                        <div class="vs-card-title">Compliance Rate</div>
+                        <div class="vs-card-title">Attendance Compliance</div>
                         <div class="vs-card-value" id="vs-compliance-pct">100%</div>
                     </div>
                 </div>
@@ -349,9 +363,9 @@
                     }).join('');
 
                     var html = `
-                        <div class="vs-card" style="margin-bottom:20px;">
-                            <h3>Create New Employee</h3>
-                            <form id="vs-create-user-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:12px;">
+                        <div class="vs-card" style="margin-bottom:16px;">
+                            <h3 style="font-size:1rem; font-weight:700;">Create New Employee</h3>
+                            <form id="vs-create-user-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:10px;">
                                 <div><label class="vs-form-label">Full Name</label><input type="text" id="vs-new-name" class="vs-input" required></div>
                                 <div><label class="vs-form-label">Phone (+971...)</label><input type="text" id="vs-new-phone" class="vs-input" value="+971" required></div>
                                 <div><label class="vs-form-label">Password</label><input type="password" id="vs-new-pass" class="vs-input" required></div>
@@ -406,9 +420,9 @@
                     }).join('');
 
                     var html = `
-                        <div class="vs-card" style="margin-bottom:20px;">
-                            <h3>Create New Branch</h3>
-                            <form id="vs-create-branch-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-top:12px;">
+                        <div class="vs-card" style="margin-bottom:16px;">
+                            <h3 style="font-size:1rem; font-weight:700;">Create New Branch</h3>
+                            <form id="vs-create-branch-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-top:10px;">
                                 <div><label class="vs-form-label">Branch Name</label><input type="text" id="vs-b-name" class="vs-input" required></div>
                                 <div><label class="vs-form-label">Address</label><input type="text" id="vs-b-addr" class="vs-input"></div>
                                 <div><label class="vs-form-label">Latitude</label><input type="text" id="vs-b-lat" class="vs-input" value="25.2048" required></div>
@@ -464,9 +478,9 @@
                 }).join('');
 
                 var html = `
-                    <div class="vs-card" style="margin-bottom:24px;">
-                        <h3 style="margin-bottom:16px;">Calculate Payroll Period</h3>
-                        <form id="vs-run-payroll-form" style="display:flex; gap:12px; align-items:flex-end;">
+                    <div class="vs-card" style="margin-bottom:16px;">
+                        <h3 style="font-size:1rem; font-weight:700; margin-bottom:10px;">Calculate Payroll Period</h3>
+                        <form id="vs-run-payroll-form" style="display:flex; gap:10px; align-items:flex-end;">
                             <div>
                                 <label class="vs-form-label">Period Name</label>
                                 <input type="text" id="vs-pay-name" class="vs-input" value="Payroll - ${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}" required>
@@ -588,9 +602,9 @@
                 }).join('');
 
                 var html = `
-                    <div class="vs-card" style="margin-bottom:20px;">
-                        <h3>Submit New Leave Request</h3>
-                        <form id="vs-submit-leave-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-top:12px;">
+                    <div class="vs-card" style="margin-bottom:16px;">
+                        <h3 style="font-size:1rem; font-weight:700;">Submit New Leave Request</h3>
+                        <form id="vs-submit-leave-form" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-top:10px;">
                             <div>
                                 <label class="vs-form-label">Leave Type</label>
                                 <select id="vs-leave-type" class="vs-select">
@@ -631,15 +645,19 @@
             });
         },
 
+        // Refined GPS Attendance Experience
         handleClockIn: function() {
-            $('#vs-clock-msg').text('Obtaining GPS coordinates...').css('color', 'var(--vs-text-muted)');
+            var $box = $('#vs-gps-status-box').removeClass('error success').text('Detecting current location...').show();
+            $('#vs-btn-clock-in').prop('disabled', true);
 
             if (!navigator.geolocation) {
-                $('#vs-clock-msg').text('Geolocation is not supported by your browser.').css('color', '#ef4444');
+                $box.addClass('error').text('Geolocation service is unavailable in your browser.');
+                $('#vs-btn-clock-in').prop('disabled', false);
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(function(pos) {
+                $box.text('Verifying branch location...');
                 $.post(VS.config.ajax_url, {
                     action: 'vs_clock_in',
                     nonce: VS.config.nonce,
@@ -647,26 +665,31 @@
                     longitude: pos.coords.longitude,
                     accuracy: pos.coords.accuracy
                 }, function(res) {
+                    $('#vs-btn-clock-in').prop('disabled', false);
                     if (res.success) {
-                        $('#vs-clock-msg').text(res.data.message).css('color', '#18181b');
+                        $box.addClass('success').text(res.data.message);
                     } else {
-                        $('#vs-clock-msg').text(res.data.message).css('color', '#ef4444');
+                        $box.addClass('error').html(res.data.message + ' <button id="vs-btn-retry-gps" class="vs-btn vs-btn-outline" style="height:26px; padding:0 8px; font-size:0.75rem; margin-left:8px;">Retry Location</button>');
                     }
                 });
             }, function(err) {
-                $('#vs-clock-msg').text('Failed to retrieve location: ' + err.message).css('color', '#ef4444');
+                $('#vs-btn-clock-in').prop('disabled', false);
+                $box.addClass('error').html('Location error: ' + err.message + ' <button id="vs-btn-retry-gps" class="vs-btn vs-btn-outline" style="height:26px; padding:0 8px; font-size:0.75rem; margin-left:8px;">Retry Location</button>');
             }, { enableHighAccuracy: true, timeout: 10000 });
         },
 
         handleClockOut: function() {
-            $('#vs-clock-msg').text('Obtaining GPS coordinates...').css('color', 'var(--vs-text-muted)');
+            var $box = $('#vs-gps-status-box').removeClass('error success').text('Detecting current location...').show();
+            $('#vs-btn-clock-out').prop('disabled', true);
 
             if (!navigator.geolocation) {
-                $('#vs-clock-msg').text('Geolocation is not supported by your browser.').css('color', '#ef4444');
+                $box.addClass('error').text('Geolocation service is unavailable in your browser.');
+                $('#vs-btn-clock-out').prop('disabled', false);
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(function(pos) {
+                $box.text('Verifying branch location...');
                 $.post(VS.config.ajax_url, {
                     action: 'vs_clock_out',
                     nonce: VS.config.nonce,
@@ -674,14 +697,16 @@
                     longitude: pos.coords.longitude,
                     accuracy: pos.coords.accuracy
                 }, function(res) {
+                    $('#vs-btn-clock-out').prop('disabled', false);
                     if (res.success) {
-                        $('#vs-clock-msg').text(res.data.message).css('color', '#18181b');
+                        $box.addClass('success').text(res.data.message);
                     } else {
-                        $('#vs-clock-msg').text(res.data.message).css('color', '#ef4444');
+                        $box.addClass('error').text(res.data.message);
                     }
                 });
             }, function(err) {
-                $('#vs-clock-msg').text('Failed to retrieve location: ' + err.message).css('color', '#ef4444');
+                $('#vs-btn-clock-out').prop('disabled', false);
+                $box.addClass('error').text('Location error: ' + err.message);
             }, { enableHighAccuracy: true, timeout: 10000 });
         },
 
